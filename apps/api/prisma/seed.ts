@@ -63,7 +63,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    // Корректно закрываем и Prisma, и пул pg
     await prisma.$disconnect();
     await pool.end();
   });
