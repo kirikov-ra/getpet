@@ -99,7 +99,7 @@ model Pet {
 
   status PetStatus @default(AVAILABLE)
 
-  images    String[] @default([])
+  images    PetImage[]
   mainImage String?
 
   ownerId String
@@ -114,4 +114,19 @@ model Pet {
   @@index([breedId])
   @@index([city, region])
   @@map("pets")
+}
+
+model PetImage {
+  id        String  @id @default(uuid())
+  url       String
+  isPrimary Boolean @default(false)
+  order     Int     @default(0)
+
+  petId String
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([petId])
+  @@map("pet_images")
 }
