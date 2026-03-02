@@ -14,16 +14,104 @@ enum Role {
   ADMIN
 }
 
+enum PetStatus {
+  AVAILABLE
+  FOSTER
+  ADOPTED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
 model User {
   id    String  @id @default(uuid())
   phone String? @unique
-  vkId  String? @unique
   email String? @unique
   name  String?
   role  Role    @default(USER)
 
+  pets Pet[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("users")
+}
+
+model Category {
+  id   String @id @default(uuid())
+  slug String @unique
+  name String
+
+  breeds Breed[]
+  pets   Pet[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("users")
+  @@map("categories")
+}
+
+model Breed {
+  id   String @id @default(uuid())
+  slug String @unique
+  name String
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  description      String   @db.Text
+  careInstructions String?  @db.Text
+  characteristics  Json?
+  photos           String[] @default([])
+
+  pets Pet[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@map("breeds")
+}
+
+model Pet {
+  id     String @id @default(uuid())
+  name   String
+  gender Gender @default(UNKNOWN)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  breedId String?
+  breed   Breed?  @relation(fields: [breedId], references: [id])
+
+  customBreed String?
+
+  description String @db.Text
+
+  city    String
+  region  String?
+  address String?
+
+  status PetStatus @default(AVAILABLE)
+
+  images    String[] @default([])
+  mainImage String?
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([categoryId, status])
+  @@index([ownerId])
+  @@index([breedId])
+  @@index([city, region])
+  @@map("pets")
 }
