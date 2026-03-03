@@ -15,10 +15,7 @@ export class PetsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Создать объявление о питомце' })
-  async create(
-    @CurrentUser() user: User,
-    @Body() dto: CreatePetDto,
-  ): Promise<PetWithRelations> {
+  async create(@CurrentUser() user: User, @Body() dto: CreatePetDto): Promise<PetWithRelations> {
     return this.petsService.create(user.id, dto);
   }
 

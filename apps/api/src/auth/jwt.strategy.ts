@@ -16,8 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey:
-        process.env['JWT_SECRET'] || 'super-secret-jwt-key-for-getpet-dev-2026',
+      secretOrKey: process.env['JWT_SECRET'] || 'super-secret-jwt-key-for-getpet-dev-2026',
     });
   }
 
@@ -27,9 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
 
     if (!user) {
-      throw new UnauthorizedException(
-        'Доступ запрещен: пользователь не найден',
-      );
+      throw new UnauthorizedException('Доступ запрещен: пользователь не найден');
     }
 
     return user;

@@ -5,10 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  private readonly otpCache = new Map<
-    string,
-    { code: string; expiry: number }
-  >();
+  private readonly otpCache = new Map<string, { code: string; expiry: number }>();
 
   constructor(
     private prisma: PrismaService,

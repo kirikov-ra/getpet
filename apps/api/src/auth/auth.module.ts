@@ -9,8 +9,7 @@ import type { StringValue } from 'ms';
   imports: [
     JwtModule.register({
       global: true,
-      secret:
-        process.env['JWT_SECRET'] || 'super-secret-jwt-key-for-getpet-dev-2026',
+      secret: process.env['JWT_SECRET'] || 'super-secret-jwt-key-for-getpet-dev-2026',
       signOptions: {
         expiresIn: (process.env.JWT_EXPIRES_IN ?? '7d') as StringValue,
       },

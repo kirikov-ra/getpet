@@ -20,7 +20,10 @@ export class EncyclopediaController {
 
   @Get('breeds/:slug')
   @ApiOperation({ summary: 'Получить детальную информацию о породе' })
-  @ApiParam({ name: 'slug', description: 'Уникальный идентификатор породы (например: golden-retriever)' })
+  @ApiParam({
+    name: 'slug',
+    description: 'Уникальный идентификатор породы (например: golden-retriever)',
+  })
   async getBreedBySlug(@Param('slug') slug: string): Promise<Breed | null> {
     return await this.encyclopediaService.getBySlug(slug);
   }
