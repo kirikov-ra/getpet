@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
-import * as path from 'path';
+import sharp from 'sharp';
 
 @Injectable()
 export class FilesService {
@@ -21,14 +21,19 @@ export class FilesService {
 
   async uploadFile(file: Express.Multer.File): Promise<string> {
     try {
-      const extension = path.extname(file.originalname);
-      const filename = `${randomUUID()}${extension}`;
+      const optimizedBuffer = await sharp(file.buffer)
+        .resize({ width: 1200, withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
 
+      const filename = `${randomUUID()}.webp`;
+
+      // 3. Отправка в S3
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: filename,
-        Body: file.buffer,
-        ContentType: file.mimetype,
+        Body: optimizedBuffer,
+        ContentType: 'image/webp',
         ACL: 'public-read',
       });
 
@@ -36,8 +41,8 @@ export class FilesService {
 
       return `${process.env.AWS_S3_ENDPOINT}/${this.bucketName}/${filename}`;
     } catch (error) {
-      console.error('Ошибка загрузки в S3:', error);
-      throw new InternalServerErrorException('Не удалось загрузить файл');
+      console.error('Ошибка обработки или загрузки в S3:', error);
+      throw new InternalServerErrorException('Не удалось обработать и загрузить изображение');
     }
   }
 }
