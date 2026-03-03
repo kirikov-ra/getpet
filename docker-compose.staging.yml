@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: getpet-api-staging
+    restart: always
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env.staging
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    container_name: getpet-db-staging
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: supersecretpassword
+      POSTGRES_DB: getpet_staging
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_staging:/var/lib/postgresql/data
+
+volumes:
+  pgdata_staging:
