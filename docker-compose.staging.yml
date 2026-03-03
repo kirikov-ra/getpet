@@ -18,12 +18,10 @@ services:
     image: postgres:15-alpine
     container_name: getpet-db-staging
     restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: supersecretpassword
-      POSTGRES_DB: getpet_staging
+    env_file:
+      - .env.staging
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata_staging:/var/lib/postgresql/data
 
