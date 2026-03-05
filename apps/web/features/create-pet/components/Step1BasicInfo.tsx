@@ -8,8 +8,9 @@ import { usePetWizardStore } from '../store/usePetWizardStore';
 
 const step1Schema = z.object({
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-  categorySlug: z.string().min(1, 'Выберите категорию'),
-  breedSlug: z.string().min(1, 'Выберите породу'),
+  // NestJS ждет UUID, поэтому добавляем валидацию на фронтенде для надежности
+  categoryId: z.string().min(1, 'Выберите категорию'),
+  breedId: z.string().min(1, 'Выберите породу'),
 });
 
 type Step1FormValues = z.infer<typeof step1Schema>;
@@ -17,8 +18,14 @@ type Step1FormValues = z.infer<typeof step1Schema>;
 export const Step1BasicInfo = () => {
   const { formData, updateForm, nextStep } = usePetWizardStore();
   
-  const [categories] = useState([{ slug: 'dogs', name: 'Собаки' }, { slug: 'cats', name: 'Кошки' }]);
-  const [breeds] = useState([{ slug: 'labrador', name: 'Лабрадор' }, { slug: 'persian', name: 'Персидская' }]);
+  const [categories] = useState([
+    { id: '2d0d7818-6b76-475c-ae83-899450530822', name: 'Собаки' }, 
+    { id: '867a8fee-39a7-4c6c-8fa5-cc8f587cee12', name: 'Кошки' }
+  ]);
+  const [breeds] = useState([
+    { id: '799119af-76b1-422a-b901-abfed8579b74', name: 'Лабрадор' }, 
+    { id: '4e7995d6-12f2-4c4a-a1dd-41b20093b9e5', name: 'Персидская' }
+  ]);
 
   const {
     register,
@@ -28,8 +35,8 @@ export const Step1BasicInfo = () => {
     resolver: zodResolver(step1Schema),
     defaultValues: {
       name: formData.name || '',
-      categorySlug: formData.categorySlug || '',
-      breedSlug: formData.breedSlug || '',
+      categoryId: (formData.categoryId?.length === 36) ? formData.categoryId : '',
+      breedId: (formData.breedId?.length === 36) ? formData.breedId : '',
     },
   });
 
@@ -55,33 +62,33 @@ export const Step1BasicInfo = () => {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="categorySlug" className="text-sm font-medium text-gray-700">Категория</label>
+        <label htmlFor="categoryId" className="text-sm font-medium text-gray-700">Категория</label>
         <select
-          id="categorySlug"
-          {...register('categorySlug')}
+          id="categoryId"
+          {...register('categoryId')}
           className="rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-blue-500 outline-none bg-white"
         >
           <option value="">Выберите категорию...</option>
           {categories.map((cat) => (
-            <option key={cat.slug} value={cat.slug}>{cat.name}</option>
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
         </select>
-        {errors.categorySlug && <span className="text-red-500 text-xs">{errors.categorySlug.message}</span>}
+        {errors.categoryId && <span className="text-red-500 text-xs">{errors.categoryId.message}</span>}
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="breedSlug" className="text-sm font-medium text-gray-700">Порода</label>
+        <label htmlFor="breedId" className="text-sm font-medium text-gray-700">Порода</label>
         <select
-          id="breedSlug"
-          {...register('breedSlug')}
+          id="breedId"
+          {...register('breedId')}
           className="rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-blue-500 outline-none bg-white"
         >
           <option value="">Выберите породу...</option>
           {breeds.map((breed) => (
-            <option key={breed.slug} value={breed.slug}>{breed.name}</option>
+            <option key={breed.id} value={breed.id}>{breed.name}</option>
           ))}
         </select>
-        {errors.breedSlug && <span className="text-red-500 text-xs">{errors.breedSlug.message}</span>}
+        {errors.breedId && <span className="text-red-500 text-xs">{errors.breedId.message}</span>}
       </div>
 
       <button

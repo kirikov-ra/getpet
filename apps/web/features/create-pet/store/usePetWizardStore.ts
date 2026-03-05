@@ -5,16 +5,17 @@ export type OwnerType = 'user' | 'shelter';
 
 export interface PetFormData {
   name: string;
-  categorySlug: string;
-  breedSlug: string;
+  categoryId: string;
+  breedId: string;
   description: string;
+  city: string;
   isSterilized: boolean;
   birthDate?: string;
   tags: string[];
   images: string[];
   ownerType: OwnerType;
-  ownerId?: string | null;
-  shelterId?: string | null;
+  ownerId?: string;
+  shelterId?: string;
   consentGiven: boolean;
 }
 
@@ -100,27 +101,61 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
 
   submitWizard: async () => {
     const { formData } = get();
+    const { user } = useAuthStore.getState();
     set({ isLoading: true, error: null });
 
     try {
-      const payload = {
-        ...formData,
-        ownerId: formData.ownerType === 'user' ? formData.ownerId : null,
-        shelterId: formData.ownerType === 'shelter' ? formData.shelterId : null,
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const token = useAuthStore.getState().token;
+
+      // 1. Формируем объект, исключая поля, которых НЕТ в DTO бэкенда
+      const { 
+        consentGiven, 
+        ownerType, 
+        ownerId, // Извлекаем, чтобы НЕ отправлять (property should not exist)
+        ...rest 
+      } = formData;
+
+      const payload: any = {
+        ...rest,
+        description: formData.description || 'Тестовое описание',
+        city: formData.city || 'Казань',
+        images: formData.images?.map((url) => ({ url })) || [],
+        // Проверка на валидность UUID перед отправкой
+        categoryId: formData.categoryId,
+        breedId: formData.breedId || undefined,
+        shelterId: ownerType === 'shelter' ? formData.shelterId : undefined,
       };
 
-      delete payload.ownerType;
+      if (!payload.shelterId) delete payload.shelterId;
+      if (!payload.breedId) delete payload.breedId;
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pets`, {
+      console.log('📦 ИТОГОВЫЙ PAYLOAD:', payload);
+
+      console.log('Отправка очищенного payload:', payload);
+
+      const response = await fetch(`${apiUrl}/pets`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error('Ошибка создания карточки питомца');
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        // Выводим массив ошибок в читаемом виде
+        const errorMsg = Array.isArray(responseData.message) 
+          ? responseData.message.join(', ') 
+          : responseData.message;
+        throw new Error(errorMsg);
+      }
 
       get().reset();
     } catch (error) {
+      console.error('Submit Error:', error);
       set({ error: (error as Error).message, isLoading: false });
     }
   },

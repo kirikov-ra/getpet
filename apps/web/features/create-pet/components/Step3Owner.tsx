@@ -10,7 +10,6 @@ import { useAuthStore } from '../../auth/store/useAuthStore';
 
 const step3Schema = z.object({
   ownerType: z.enum(['user', 'shelter']),
-  
   consentPersonalData: z.boolean().refine((val) => val === true, {
     message: 'Для публикации объявления необходимо согласие по ФЗ-152',
   }),
@@ -31,14 +30,16 @@ export const Step3Owner = () => {
   });
 
   const onSubmit = async (data: Step3Values) => {
+    // Мапим данные из формы строго под интерфейс PetFormData
     const finalData = {
-      ...data,
-      ownerId: data.ownerType === 'user' ? user?.id : null,
-      shelterId: data.ownerType === 'shelter' ? 'some-shelter-uuid' : null, 
+      ownerType: data.ownerType,
+      consentGiven: data.consentPersonalData,
+      // Заменяем null на undefined для корректной типизации
+      ownerId: data.ownerType === 'user' ? user?.id : undefined,
+      shelterId: data.ownerType === 'shelter' ? '55555555-5555-5555-5555-555555555555' : undefined, 
     };
 
     updateForm(finalData);
-    
     await submitWizard();
   };
 
@@ -63,7 +64,7 @@ export const Step3Owner = () => {
             <span className="font-bold text-sm">От себя</span>
             <span className="text-xs text-gray-400">Частное лицо</span>
           </label>
-          <label className={`flex flex-col p-4 border rounded-xl cursor-pointer transition-all ${user?.role !== 'SHELTER_ADMIN' ? 'border-blue-600 bg-blue-50' : ''}`}>
+          <label className={`flex flex-col p-4 border rounded-xl cursor-pointer transition-all ${user?.role === 'SHELTER_ADMIN' ? 'border-blue-600 bg-blue-50' : ''}`}>
             <input 
               type="radio" 
               value="shelter" 
