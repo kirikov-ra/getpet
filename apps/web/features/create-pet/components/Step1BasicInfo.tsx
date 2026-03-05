@@ -8,7 +8,6 @@ import { usePetWizardStore } from '../store/usePetWizardStore';
 
 const step1Schema = z.object({
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
-  // NestJS ждет UUID, поэтому добавляем валидацию на фронтенде для надежности
   categoryId: z.string().min(1, 'Выберите категорию'),
   breedId: z.string().min(1, 'Выберите породу'),
 });

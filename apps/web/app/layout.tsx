@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] });
 
@@ -32,6 +33,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">Мои анкеты</span>
           </div>
         </nav>
+
+        <Toaster 
+          position="bottom-right" 
+          toastOptions={{
+            style: { 
+              borderRadius: '1.5rem', 
+              background: '#fff',
+              border: '1px solid #F3F4F6',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.05)' 
+            },
+          }} 
+        />
       </body>
     </html>
   );

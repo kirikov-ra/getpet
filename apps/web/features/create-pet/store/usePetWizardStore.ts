@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { useAuthStore } from '../../auth/store/useAuthStore';
+import { toast } from 'sonner';
 
 export type OwnerType = 'user' | 'shelter';
 
@@ -129,10 +130,6 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
       if (!payload.shelterId) delete payload.shelterId;
       if (!payload.breedId) delete payload.breedId;
 
-      console.log('📦 ИТОГОВЫЙ PAYLOAD:', payload);
-
-      console.log('Отправка очищенного payload:', payload);
-
       const response = await fetch(`${apiUrl}/pets`, {
         method: 'POST',
         headers: { 
@@ -152,10 +149,18 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
         throw new Error(errorMsg);
       }
 
+      toast.success('Питомец добавлен!', {
+        description: `Анкета для ${get().formData.name} успешно опубликована.`,
+        icon: '🐾',
+        duration: 5000,
+      });
+
       get().reset();
     } catch (error) {
-      console.error('Submit Error:', error);
       set({ error: (error as Error).message, isLoading: false });
+      toast.error('Не удалось сохранить', {
+        description: 'Проверьте соединение с интернетом или попробуйте позже.',
+      });
     }
   },
 

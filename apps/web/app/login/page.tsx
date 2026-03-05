@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { PatternFormat } from 'react-number-format';
 import { useAuthStore } from '../../features/auth/store/useAuthStore';
 import { PhoneFormValues, PhoneSchema, VerifyCodeFormValues, VerifyCodeSchema } from '../../features/auth/schemas/auth.schema';
 
@@ -15,13 +16,16 @@ export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
+  // Извлекаем errors для отображения сообщений под инпутами
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(PhoneSchema),
   });
+  const { errors: phoneErrors } = phoneForm.formState;
 
   const codeForm = useForm<VerifyCodeFormValues>({
     resolver: zodResolver(VerifyCodeSchema),
   });
+  const { errors: codeErrors } = codeForm.formState;
 
   const onSendCode = async (data: PhoneFormValues) => {
     setServerError(null);
@@ -31,14 +35,10 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-
       if (!response.ok) throw new Error('Не удалось отправить код');
-      
       setPhone(data.phone);
       setStep('CODE');
-    } catch (err: any) {
-      setServerError(err.message);
-    }
+    } catch (err: any) { setServerError(err.message); }
   };
 
   const onVerifyCode = async (data: VerifyCodeFormValues) => {
@@ -49,16 +49,11 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, code: data.code }),
       });
-
       if (!response.ok) throw new Error('Неверный код');
-
       const { access_token, user } = await response.json();
       setAuth(access_token, user);
-      
       router.push('/');
-    } catch (err: any) {
-      setServerError(err.message);
-    }
+    } catch (err: any) { setServerError(err.message); }
   };
 
   return (
@@ -70,16 +65,52 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={step === 'PHONE' ? phoneForm.handleSubmit(onSendCode) : codeForm.handleSubmit(onVerifyCode)} className="space-y-4">
-          <input
-            {...(step === 'PHONE' ? phoneForm.register('phone') : codeForm.register('code'))}
-            className="w-full rounded-2xl bg-[#F3F4F6] border-none p-5 text-sm font-medium focus:ring-2 focus:ring-[#059669] transition-all placeholder:text-gray-400"
-            placeholder={step === 'PHONE' ? "+7 000 000 00 00" : "0 0 0 0"}
-          />
+          {step === 'PHONE' ? (
+            <div className="text-left space-y-1">
+              <Controller
+                name="phone"
+                control={phoneForm.control}
+                render={({ field: { onChange, value } }) => (
+                  <PatternFormat
+                    format="+7 (###) ### ## ##"
+                    mask="_"
+                    value={value ? value.toString().replace('+7', '') : ''}
+                    onValueChange={(values) => {
+                      onChange(values.value ? `+7${values.value}` : '');
+                    }}
+                    // Добавляем красную рамку, если есть ошибка
+                    className={`w-full rounded-2xl bg-[#F3F4F6] border-none p-5 text-sm font-medium transition-all placeholder:text-gray-400 focus:ring-2 ${
+                      phoneErrors.phone ? 'ring-2 ring-red-500' : 'focus:ring-[#059669]'
+                    }`}
+                    placeholder="+7 (___) ___ __ __"
+                  />
+                )}
+              />
+              {phoneErrors.phone && (
+                <span className="text-[10px] text-red-500 font-bold uppercase px-4">{phoneErrors.phone.message}</span>
+              )}
+            </div>
+          ) : (
+            <div className="text-left space-y-1">
+              <input
+                {...codeForm.register('code')}
+                className={`w-full rounded-2xl bg-[#F3F4F6] border-none p-5 text-sm font-medium transition-all placeholder:text-gray-400 focus:ring-2 ${
+                  codeErrors.code ? 'ring-2 ring-red-500' : 'focus:ring-[#059669]'
+                }`}
+                placeholder="0 0 0 0"
+              />
+              {codeErrors.code && (
+                <span className="text-[10px] text-red-500 font-bold uppercase px-4">{codeErrors.code.message}</span>
+              )}
+            </div>
+          )}
           
-          <button className="w-full rounded-2xl bg-[#064E3B] py-5 font-bold text-white shadow-xl shadow-emerald-100 transition-all active:scale-95">
+          <button className="w-full rounded-2xl bg-[#064E3B] py-5 font-bold text-white shadow-xl shadow-emerald-100 transition-all active:scale-95 disabled:opacity-50">
             {step === 'PHONE' ? 'Запросить код' : 'Подтвердить'}
           </button>
         </form>
+
+        {serverError && <p className="text-xs text-red-500 mt-4 font-medium">{serverError}</p>}
       </div>
     </div>
   );
