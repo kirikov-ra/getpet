@@ -4,8 +4,7 @@ import React from 'react';
 import { usePetWizardStore } from '../store/usePetWizardStore';
 import { Step1BasicInfo } from './Step1BasicInfo';
 import { Step2Photos } from './Step2Photos';
-
-const Step3Owner = () => <div>Шаг 3: Выбор владельца и ФЗ-152 (в разработке)</div>;
+import { Step3Owner } from './Step3Owner';
 
 export const WizardManager = () => {
   const step = usePetWizardStore((state) => state.step);

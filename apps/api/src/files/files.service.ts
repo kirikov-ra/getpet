@@ -6,16 +6,17 @@ import sharp from 'sharp';
 @Injectable()
 export class FilesService {
   private s3Client: S3Client;
-  private bucketName = process.env.AWS_S3_BUCKET_NAME;
+  private bucketName = process.env.AWS_S3_BUCKET_NAME?.trim() || 'pets';
 
   constructor() {
     this.s3Client = new S3Client({
-      region: process.env.AWS_S3_REGION,
-      endpoint: process.env.AWS_S3_ENDPOINT,
+      region: process.env.AWS_S3_REGION?.trim() || 'ru-central1',
+      endpoint: process.env.AWS_S3_ENDPOINT?.trim(),
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID?.trim() || '',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY?.trim() || '',
       },
+      forcePathStyle: true,
     });
   }
 
@@ -28,20 +29,21 @@ export class FilesService {
 
       const filename = `${randomUUID()}.webp`;
 
-      // 3. Отправка в S3
       const command = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: filename,
         Body: optimizedBuffer,
         ContentType: 'image/webp',
-        ACL: 'public-read',
       });
 
       await this.s3Client.send(command);
 
-      return `${process.env.AWS_S3_ENDPOINT}/${this.bucketName}/${filename}`;
-    } catch (error) {
-      console.error('Ошибка обработки или загрузки в S3:', error);
+      return `${process.env.AWS_S3_ENDPOINT?.trim()}/${this.bucketName}/${filename}`;
+    } catch (error: unknown) {
+      const err = error instanceof Error ? error : new Error(String(error));
+
+      console.error('❌ ОШИБКА В S3/SHARP:', err.message, err.stack);
+
       throw new InternalServerErrorException('Не удалось обработать и загрузить изображение');
     }
   }

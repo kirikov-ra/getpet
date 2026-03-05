@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useAuthStore } from '../../auth/store/useAuthStore';
 
 export type OwnerType = 'user' | 'shelter';
 
@@ -70,8 +71,13 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
       const targetUrl = `${apiUrl}/files/upload`;
       console.log('🚀 ОТПРАВЛЯЮ ФАЙЛ НА:', targetUrl);
 
+      const token = useAuthStore.getState().token;
+
       const response = await fetch(targetUrl, {
         method: 'POST',
+        headers: { 
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: formData, 
       });
 
