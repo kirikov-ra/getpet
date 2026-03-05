@@ -108,11 +108,10 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const token = useAuthStore.getState().token;
 
-      // 1. Формируем объект, исключая поля, которых НЕТ в DTO бэкенда
       const { 
         consentGiven, 
         ownerType, 
-        ownerId, // Извлекаем, чтобы НЕ отправлять (property should not exist)
+        ownerId,
         ...rest 
       } = formData;
 

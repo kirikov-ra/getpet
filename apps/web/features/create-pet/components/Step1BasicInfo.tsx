@@ -46,56 +46,47 @@ export const Step1BasicInfo = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 max-w-md w-full">
-      <h2 className="text-2xl font-bold text-gray-900">Базовая информация</h2>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 max-w-md w-full p-10">
+      <h2 className="text-2xl font-black text-gray-900 tracking-tight">Базовая информация</h2>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="name" className="text-sm font-medium text-gray-700">Имя питомца</label>
-        <input
-          id="name"
-          type="text"
-          {...register('name')}
-          className="rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-blue-500 outline-none"
-          placeholder="Например: Шарик"
-        />
-        {errors.name && <span className="text-red-500 text-xs">{errors.name.message}</span>}
+      <div className="space-y-5">
+        <div className="flex flex-col gap-2">
+          <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Имя питомца</label>
+          <input
+            {...register('name')}
+            className="w-full rounded-2xl bg-gray-50 text-gray-900 border-none p-4 text-sm font-medium focus:ring-2 focus:ring-emerald-500 transition-all placeholder:text-gray-400"
+            placeholder="Например: Шарик"
+          />
+          {errors.name && <span className="text-red-500 text-[10px] font-bold ml-1 uppercase">{errors.name.message}</span>}
+        </div>
+
+        <div className="grid grid-cols-1 gap-5">
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Категория</label>
+            <select
+              {...register('categoryId')}
+              className="w-full rounded-2xl text-gray-400 bg-gray-50 border-none p-4 text-sm font-medium focus:ring-2 focus:ring-emerald-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="">Выберите...</option>
+              {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-gray-400 ml-1">Порода</label>
+            <select
+              {...register('breedId')}
+              className="w-full rounded-2xl text-gray-400 bg-gray-50 border-none p-4 text-sm font-medium focus:ring-2 focus:ring-emerald-500 transition-all appearance-none cursor-pointer"
+            >
+              <option value="">Выберите...</option>
+              {breeds.map((breed) => <option key={breed.id} value={breed.id}>{breed.name}</option>)}
+            </select>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="categoryId" className="text-sm font-medium text-gray-700">Категория</label>
-        <select
-          id="categoryId"
-          {...register('categoryId')}
-          className="rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-blue-500 outline-none bg-white"
-        >
-          <option value="">Выберите категорию...</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
-          ))}
-        </select>
-        {errors.categoryId && <span className="text-red-500 text-xs">{errors.categoryId.message}</span>}
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label htmlFor="breedId" className="text-sm font-medium text-gray-700">Порода</label>
-        <select
-          id="breedId"
-          {...register('breedId')}
-          className="rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-blue-500 outline-none bg-white"
-        >
-          <option value="">Выберите породу...</option>
-          {breeds.map((breed) => (
-            <option key={breed.id} value={breed.id}>{breed.name}</option>
-          ))}
-        </select>
-        {errors.breedId && <span className="text-red-500 text-xs">{errors.breedId.message}</span>}
-      </div>
-
-      <button
-        type="submit"
-        className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors"
-      >
-        Далее
+      <button className="w-full rounded-2xl bg-[#064E3B] py-5 font-bold text-white hover:cursor-pointer hover:shadow-xl shadow-emerald-50 transition-all active:scale-95">
+        Продолжить
       </button>
     </form>
   );

@@ -10,16 +10,21 @@ export const WizardManager = () => {
   const step = usePetWizardStore((state) => state.step);
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4">
-      <div className="mb-8 flex justify-between items-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-        <span className={step >= 1 ? "text-blue-600" : ""}>Инфо</span>
-        <div className="h-px bg-gray-200 flex-1 mx-4" />
-        <span className={step >= 2 ? "text-blue-600" : ""}>Фото</span>
-        <div className="h-px bg-gray-200 flex-1 mx-4" />
-        <span className={step >= 3 ? "text-blue-600" : ""}>Владелец</span>
+    <div className="w-full max-w-2xl mx-auto">
+      <div className="mb-10 px-2">
+        <div className="flex justify-between mb-3 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+          <span>Этап {step} из 3</span>
+          <span>{step === 1 ? 'Базовая информация' : step === 2 ? 'Медиа' : 'Владение'}</span>
+        </div>
+        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-[#059669] transition-all duration-500 ease-out shadow-[0_0_8px_rgba(5,150,105,0.4)]"
+            style={{ width: `${(step / 3) * 100}%` }}
+          />
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 p-8">
         {step === 1 && <Step1BasicInfo />}
         {step === 2 && <Step2Photos />}
         {step === 3 && <Step3Owner />}

@@ -9,28 +9,27 @@ export const metadata: Metadata = {
   description: "Сервис поиска питомцев из приютов",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru">
-      <body className={`${inter.className} bg-gray-50 text-slate-900`}>
-        <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-md">
-          <div className="mx-auto flex h-14 max-w-lg items-center justify-between px-4">
-            <span className="text-xl font-bold tracking-tight text-blue-600">GetPet</span>
-            <div className="h-8 w-8 rounded-full bg-gray-200" /> {/* Placeholder для аватара */}
+      <body className={`${inter.className} bg-[#F9FAFB] text-[#1F2937]`}>
+        <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/70 backdrop-blur-xl">
+          <div className="mx-auto flex h-16 max-w-lg items-center justify-between px-6">
+            <span className="text-2xl font-black tracking-tight text-[#064E3B]">GetPet</span>
+            <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-[#059669] to-[#34D399] shadow-sm" />
           </div>
         </header>
 
-        <main className="mx-auto max-w-lg pb-20">{children}</main>
+        <main className="mx-auto max-w-lg px-4 pt-6 pb-24">{children}</main>
 
-        <nav className="fixed bottom-0 left-0 right-0 border-t bg-white px-6 py-3">
-          <div className="mx-auto flex max-w-lg justify-between text-[10px] uppercase text-gray-400">
-            <span className="text-blue-600 font-bold">Поиск</span>
-            <span>Избранное</span>
-            <span>Мои объявления</span>
+        <nav className="fixed bottom-0 left-0 right-0 border-t border-gray-100 bg-white/80 px-8 py-4 backdrop-blur-lg">
+          <div className="mx-auto flex max-w-lg justify-between items-center">
+            <div className="flex flex-col items-center gap-1 group cursor-pointer">
+              <div className="h-1 w-5 rounded-full bg-[#059669]" />
+              <span className="text-[11px] font-bold uppercase tracking-tighter text-[#059669]">Поиск</span>
+            </div>
+            <span className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">Избранное</span>
+            <span className="text-[11px] font-medium uppercase tracking-tighter text-gray-400">Мои анкеты</span>
           </div>
         </nav>
       </body>
