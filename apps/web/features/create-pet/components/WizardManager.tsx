@@ -3,8 +3,8 @@
 import React from 'react';
 import { usePetWizardStore } from '../store/usePetWizardStore';
 import { Step1BasicInfo } from './Step1BasicInfo';
+import { Step2Photos } from './Step2Photos';
 
-const Step2Photos = () => <div>Шаг 2: Загрузка фото (в разработке)</div>;
 const Step3Owner = () => <div>Шаг 3: Выбор владельца и ФЗ-152 (в разработке)</div>;
 
 export const WizardManager = () => {

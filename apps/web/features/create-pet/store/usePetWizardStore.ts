@@ -58,15 +58,24 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
   uploadPhoto: async (file: File) => {
     set({ isLoading: true, error: null });
     try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      
+      if (!apiUrl) {
+        throw new Error('Критическая ошибка: NEXT_PUBLIC_API_URL не задан');
+      }
+
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/files/upload`, {
+      const targetUrl = `${apiUrl}/files/upload`;
+      console.log('🚀 ОТПРАВЛЯЮ ФАЙЛ НА:', targetUrl);
+
+      const response = await fetch(targetUrl, {
         method: 'POST',
-        body: formData,
+        body: formData, 
       });
 
-      if (!response.ok) throw new Error('Ошибка загрузки файла');
+      if (!response.ok) throw new Error(`Ошибка API: ${response.status}`);
 
       const data = await response.json();
       
@@ -78,6 +87,7 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
         isLoading: false,
       }));
     } catch (error) {
+      console.error('Upload Error:', error);
       set({ error: (error as Error).message, isLoading: false });
     }
   },

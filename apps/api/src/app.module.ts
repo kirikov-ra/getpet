@@ -5,15 +5,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { FilesModule } from './files/files.module';
+import { PetsModule } from './pets/pets.module';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
+    FilesModule,
+    PetsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 3,
+        limit: 100,
       },
     ]),
   ],

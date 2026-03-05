@@ -1,6 +1,7 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { ConsentType } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
     return { message: 'Код успешно отправлен' };
   }
 
-  async verifySmsCode(phone: string, code: string) {
+  async verifySmsCode(phone: string, code: string, ip?: string, userAgent?: string) {
     const record = this.otpCache.get(phone);
 
     if (!record || record.code !== code || record.expiry < Date.now()) {
@@ -41,6 +42,14 @@ export class AuthService {
       user = await this.prisma.user.create({
         data: {
           phone,
+          consents: {
+            create: {
+              type: ConsentType.PDN_PROCESSING,
+              purpose: 'Регистрация по номеру телефона',
+              ip: ip || 'unknown',
+              userAgent: userAgent || 'unknown',
+            },
+          },
         },
       });
     }
@@ -52,6 +61,43 @@ export class AuthService {
       user: {
         id: user.id,
         phone: user.phone,
+      },
+    };
+  }
+
+  async verifyVkLoginStub(vkId: string, name: string, ip?: string, userAgent?: string) {
+    this.logger.log(`[VK MOCK] Попытка авторизации с vkId: ${vkId}`);
+
+    let user = await this.prisma.user.findUnique({
+      where: { vkId },
+    });
+
+    if (!user) {
+      this.logger.log(`Создан новый пользователь через VK: ${name}`);
+      user = await this.prisma.user.create({
+        data: {
+          vkId,
+          name,
+          consents: {
+            create: {
+              type: ConsentType.PDN_PROCESSING,
+              purpose: 'Авторизация через VK ID (Заглушка)',
+              ip: ip || 'unknown',
+              userAgent: userAgent || 'unknown',
+            },
+          },
+        },
+      });
+    }
+
+    const payload = { sub: user.id };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      user: {
+        id: user.id,
+        name: user.name,
+        vkId: user.vkId,
       },
     };
   }
