@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { UploadCloud, Loader2, X} from 'lucide-react';
 import { usePetWizardStore } from '../store/usePetWizardStore';
 

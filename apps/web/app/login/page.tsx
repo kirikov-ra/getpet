@@ -16,7 +16,6 @@ export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  // Извлекаем errors для отображения сообщений под инпутами
   const phoneForm = useForm<PhoneFormValues>({
     resolver: zodResolver(PhoneSchema),
   });
@@ -78,7 +77,6 @@ export default function LoginPage() {
                     onValueChange={(values) => {
                       onChange(values.value ? `+7${values.value}` : '');
                     }}
-                    // Добавляем красную рамку, если есть ошибка
                     className={`w-full rounded-2xl bg-[#F3F4F6] border-none p-5 text-sm font-medium transition-all placeholder:text-gray-400 focus:ring-2 ${
                       phoneErrors.phone ? 'ring-2 ring-red-500' : 'focus:ring-[#059669]'
                     }`}

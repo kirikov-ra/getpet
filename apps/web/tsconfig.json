@@ -1,11 +1,15 @@
 {
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
       }
     ],
+    "paths": {
+      "@shared/*": ["../../shared/*"]
+    },
     "strictNullChecks": true
   },
   "include": [
@@ -13,7 +17,8 @@
     "**/*.tsx",
     "next-env.d.ts",
     "next.config.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../shared/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

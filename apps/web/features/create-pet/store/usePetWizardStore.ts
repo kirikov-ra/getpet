@@ -71,7 +71,6 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
       formData.append('file', file);
 
       const targetUrl = `${apiUrl}/files/upload`;
-      console.log('🚀 ОТПРАВЛЯЮ ФАЙЛ НА:', targetUrl);
 
       const token = useAuthStore.getState().token;
 
@@ -142,7 +141,6 @@ export const usePetWizardStore = create<PetWizardState>((set, get) => ({
       const responseData = await response.json();
 
       if (!response.ok) {
-        // Выводим массив ошибок в читаемом виде
         const errorMsg = Array.isArray(responseData.message) 
           ? responseData.message.join(', ') 
           : responseData.message;

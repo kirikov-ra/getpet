@@ -1,6 +1,5 @@
 "use client";
 
-import React from 'react';
 import { usePetWizardStore } from '../store/usePetWizardStore';
 import { Step1BasicInfo } from './Step1BasicInfo';
 import { Step2Photos } from './Step2Photos';

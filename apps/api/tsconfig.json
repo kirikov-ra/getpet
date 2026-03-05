@@ -11,6 +11,9 @@
     "outDir": "./dist",
     "sourceMap": true,
     "baseUrl": "./",
+    "paths": {
+      "@shared/*": ["../../shared/*"]
+    },
     "incremental": true
   }
 }
